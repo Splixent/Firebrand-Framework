@@ -1,7 +1,10 @@
 --Strict
 
-local Shared = game:GetService("ReplicatedStorage").Shared
-local Server = game:GetService("ServerScriptService").Server
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local ServerScriptService = game:GetService("ServerScriptService")
+
+local Shared = ReplicatedStorage.Shared
+local Server = ServerScriptService.Server
 
 local BootstrapModules = {
     Red = require (Shared.Red),
