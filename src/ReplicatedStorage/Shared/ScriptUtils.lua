@@ -120,6 +120,20 @@ function ScriptUtils.NumberIsEvenOdd(Number: number): boolean
 	end
 end
 
+function ScriptUtils.MergeTables(t1: any, t2: any): any
+	local Result = {}
+
+	for key, value in pairs(t1) do
+		Result[key] = value
+	end
+
+	for key, value in pairs(t2) do
+		Result[key] = value
+	end
+  
+	return Result
+end
+
 function ScriptUtils.StringToBool(str: string): boolean
 	return string.lower(str or "") == "true"
 end

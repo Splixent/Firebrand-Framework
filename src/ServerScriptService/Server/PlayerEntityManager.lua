@@ -11,14 +11,14 @@ local ReplicaService = require(Server.ReplicaService)
 local Constants = require(Server.Constants)
 local ScriptUtils = require(Shared.ScriptUtils)
 local Maid = require(Shared.Maid)
-local DataManager = require(Server.Datastore.DataManager)
+local SharedTypes = require(Shared.SharedTypes)
+local DataObject = require(Server.Datastore.DataObject)
 
 local PlayerEntityManager = {}
 
-function PlayerEntityManager.Create(Player: Player): any
+function PlayerEntityManager.new(Player: Player, ExtraInfo: boolean?): SharedTypes.Replica | { Replica: SharedTypes.Replica }
     if PlayerEntityManager[Player] == nil and Player ~= nil then
         local PlayerEntityInfo = {}
-        PlayerEntityInfo.Player = Player
         PlayerEntityInfo.Replica = ReplicaService.NewReplica({
             ClassToken = ReplicaService.NewClassToken("States"..Player.UserId),
             Data = ScriptUtils.DeepCopy(Constants.States),
@@ -26,30 +26,29 @@ function PlayerEntityManager.Create(Player: Player): any
         })
         PlayerEntityManager[Player] = PlayerEntityInfo
     end
-    return PlayerEntityManager[Player]
+    return if ExtraInfo then PlayerEntityManager[Player] else PlayerEntityManager[Player].Replica
 end
 
 function PlayerEntityManager.SetupCharacter(Player: Player)
     if Player == nil then return end
     Player:LoadCharacter()
 
-    local Character = Player.Character or Player.CharacterAdded:Wait()
-    local PlayerData = DataManager:Create(Player)
+    local DiedMaid = Maid.new()
+    local Character: Model = Player.Character or Player.CharacterAdded:Wait()
+    local Humanoid: Humanoid = Character:WaitForChild("Humanoid")
 
-    local NewMaid = Maid.new()
-
-    NewMaid:GiveTask(Player.Character.Humanoid.Died:Connect(function()
-        PlayerEntityManager:OnDied(Player)
-        NewMaid:Destroy() 
+    DiedMaid:GiveTask(Humanoid.Died:Connect(function()
+        PlayerEntityManager.OnDied(Player)
+        DiedMaid:Destroy() 
     end))
 end
 
 function PlayerEntityManager.OnDied(Player)
-    PlayerEntityManager:SetupCharacter(Player)
+    PlayerEntityManager.SetupCharacter(Player)
 end
 
 Players.PlayerRemoving:Connect(function(Player)
-    local Replica = PlayerEntityManager:Create(Player).Replica
+    local Replica = PlayerEntityManager.new(Player)
     Replica:Destroy()
     if PlayerEntityManager[Player] ~= nil then
         PlayerEntityManager[Player] = nil

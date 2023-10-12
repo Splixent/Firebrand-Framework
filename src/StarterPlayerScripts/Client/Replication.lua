@@ -1,7 +1,7 @@
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
-local Client = Players.LocalPlayer.StarterPlayerScripts.Client
+local Client = Players.LocalPlayer.PlayerScripts.Client
 local Shared = ReplicatedStorage.Shared
 
 local ReplicaController = require(Client.ReplicaController)

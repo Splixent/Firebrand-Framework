@@ -9,7 +9,7 @@ local Server = ServerScriptService.Server
 
 local ProfileService = require(Server.ProfileService)
 local Constants = require(Server.Constants)
-local DataManager = require(script.DataManager)
+local DataObject = require(script.DataObject)
 local PlayerEntityManager = require(Server.PlayerEntityManager)
 local ScriptUtils = require(Shared.ScriptUtils)
 
@@ -53,16 +53,16 @@ function Datastore:LoadData(Player: Player)
     Profiles[Player].Data.LoginInfo.TotalLogins += 1
     Profiles[Player].Data.LoginInfo.LastLogin = os.time()
     
-    Datastore[Player].DataManager = DataManager:Create(Player, Profiles[Player].Data)
-    Datastore[Player].PlayerEntity = PlayerEntityManager:Create(Player)
+    Datastore[Player].DataObject = DataObject.new(Player, Profiles[Player].Data, true)
+    Datastore[Player].PlayerEntity = PlayerEntityManager.new(Player)
 
-    PlayerEntityManager:SetupCharacter(Player)
+    PlayerEntityManager.SetupCharacter(Player)
 
-    Datastore[Player].PlayerEntity.Replica:SetValue({"Loaded"}, true)
+    Datastore[Player].PlayerEntity:SetValue({"Loaded"}, true)
 end
 
 function Datastore:SaveData(Player: Player)
-    Datastore[Player].DataManager.Changed:Connect(function(Player, UpdatedData)
+    Datastore[Player].DataObject.Changed:Connect(function(Player, UpdatedData)
         Profiles[Player].Data = UpdatedData
     end)
 end
@@ -75,7 +75,7 @@ for _, Player in ipairs (Players:GetPlayers()) do
     task.spawn(function()
         Datastore[Player] = {}
         Datastore:PlayerAdded(Player)
-    end, Player)
+    end)
 end
 
 Players.PlayerAdded:Connect(function(Player: Player)
@@ -85,12 +85,11 @@ end)
 
 Players.PlayerRemoving:Connect(function(Player: Player)
     local Profile = Profiles[Player]
-    DataManager[Player.UserId] = nil
+    DataObject[Player] = nil
 
     if Profile then
         Profile.Data.LoginInfo.TotalPlaytime += (os.time() -  Profile.Data.LoginInfo.LastLogin) 
     end
-    
 
     if Profile ~= nil then
         Profile:Release()
