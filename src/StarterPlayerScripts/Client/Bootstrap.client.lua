@@ -8,6 +8,7 @@ local Client = Players.LocalPlayer.PlayerScripts.Client
 
 local Replication = require(Client.Replication)
 local Red = require(Shared.Red)
+local UI = require(Client.UI)
 
 local Net = Red.Client("Network")
 

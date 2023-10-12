@@ -12,7 +12,6 @@ local Constants = require(Server.Constants)
 local ScriptUtils = require(Shared.ScriptUtils)
 local Maid = require(Shared.Maid)
 local SharedTypes = require(Shared.SharedTypes)
-local DataObject = require(Server.Datastore.DataObject)
 
 local PlayerEntityManager = {}
 

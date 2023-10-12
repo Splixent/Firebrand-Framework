@@ -10,7 +10,6 @@ local Server = ServerScriptService.Server
 local Signal = require(Shared.Signal)
 local ReplicaService = require(Server.ReplicaService)
 local SharedTypes = require(Shared.SharedTypes)
-local Constants = require(Server.Constants)
 
 local DataObject = {}
 
