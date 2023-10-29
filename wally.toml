@@ -1,8 +1,8 @@
 [package]
-name = "tomiokelana/gengine-framework"
+name = "tomiokelana/firebrand-framework"
 version = "0.1.0"
 registry = "https://github.com/UpliftGames/wally-index"
 realm = "shared"
 
 [dependencies]
-name = "uncontained0/red@^1.2.2"
+Red = "red-blox/red@2.1.1"
