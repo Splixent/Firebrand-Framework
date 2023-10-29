@@ -15,8 +15,9 @@ local SharedTypes = require(Shared.SharedTypes)
 
 local PlayerEntityManager = {}
 
-function PlayerEntityManager.new(Player: Player, ExtraInfo: boolean?): SharedTypes.Replica | { Replica: SharedTypes.Replica }
-    if PlayerEntityManager[Player] == nil and Player ~= nil then
+function PlayerEntityManager.new(Player: Player?, ExtraInfo: boolean?): SharedTypes.Replica | { Replica: SharedTypes.Replica } | nil
+    assert(Player, "Player is nil")
+    if PlayerEntityManager[Player] == nil then
         local PlayerEntityInfo = {}
         PlayerEntityInfo.Replica = ReplicaService.NewReplica({
             ClassToken = ReplicaService.NewClassToken("States"..Player.UserId),
@@ -28,13 +29,13 @@ function PlayerEntityManager.new(Player: Player, ExtraInfo: boolean?): SharedTyp
     return if ExtraInfo then PlayerEntityManager[Player] else PlayerEntityManager[Player].Replica
 end
 
-function PlayerEntityManager.SetupCharacter(Player: Player)
-    if Player == nil then return end
+function PlayerEntityManager.SetupCharacter(Player: Player?)
+    assert(Player, "Player is nil")
     Player:LoadCharacter()
 
     local DiedMaid = Maid.new()
     local Character: Model = Player.Character or Player.CharacterAdded:Wait()
-    local Humanoid: Humanoid = Character:WaitForChild("Humanoid")
+    local Humanoid: Humanoid = Character:WaitForChild("Humanoid"):: Humanoid
 
     DiedMaid:GiveTask(Humanoid.Died:Connect(function()
         PlayerEntityManager.OnDied(Player)
@@ -42,12 +43,16 @@ function PlayerEntityManager.SetupCharacter(Player: Player)
     end))
 end
 
-function PlayerEntityManager.OnDied(Player)
+function PlayerEntityManager.OnDied(Player: Player?)
     PlayerEntityManager.SetupCharacter(Player)
 end
 
-Players.PlayerRemoving:Connect(function(Player)
+Players.PlayerRemoving:Connect(function(Player: Player?)
     local Replica = PlayerEntityManager.new(Player)
+
+    assert(Player, "Player is nil")
+    assert(Replica, "PlayerEntity is nil")
+
     Replica:Destroy()
     if PlayerEntityManager[Player] ~= nil then
         PlayerEntityManager[Player] = nil
