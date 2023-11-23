@@ -28,6 +28,10 @@ ReplicaController.NewReplicaSignal:Connect(function(Replica)
 	end
 end)
 
+function Replication.LoadedChanged(Handler)
+	Replication.States:ListenToChange({"Loaded"}, Handler)
+end
+
 while game:IsLoaded() == false do
 	task.wait()
 end
