@@ -9,18 +9,17 @@ local Server = ServerScriptService.Server
 require(Server.Datastore)
 require(Server.Datastore.DataObject)
 require(Server.SyncedTime)
-require(Server.Replication)
 
 local PlayerEntityManager = require(Server.PlayerEntityManager)
 local Events = require(Shared.Events)
 
 local InGame = Events.InGame:Server()
 
-InGame:On(function(Player: Player)
-    local PlayerEntity = PlayerEntityManager.new(Player)
+InGame:On(function(player: Player)
+    local PlayerEntity = PlayerEntityManager.new(player)
 
-    assert(Player, "Player is nil")
+    assert(player, "player is nil")
     assert(PlayerEntity, "PlayerEntity is nil")
 
-    PlayerEntity:SetValue({"InGame"}, true)
+    PlayerEntity:SetValue({"inGame"}, true)
 end)

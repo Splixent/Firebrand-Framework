@@ -16,84 +16,85 @@ local ScriptUtils = require(Shared.ScriptUtils)
 local Datastore = {}
 local Profiles = {}
 
-local GameProfileStore = ProfileService.GetProfileStore(
-    "Default",
-    ScriptUtils.DeepCopy(Constants.ProfileSettings.ProfileTemplate)
+local gameProfileStore = ProfileService.GetProfileStore(
+    "default",
+    ScriptUtils.DeepCopy(Constants.profileSettings.profileTemplate)
 ).Mock
 
 
-function Datastore:PlayerAdded(Player: Player)
-    local Profile = GameProfileStore:LoadProfileAsync("DataKey"..Player.UserId)
-    if Profile ~= nil then
-        Profile:AddUserId(Player.UserId)
-        Profile:Reconcile()
-        Profile:ListenToRelease(function()
-            Profiles[Player] = nil
-            Player:Kick()
+function Datastore:PlayerAdded(player: Player)
+    local profile = gameProfileStore:LoadProfileAsync("dataKey"..player.UserId)
+    if profile ~= nil then
+        profile:AddUserId(player.UserId)
+        profile:Reconcile()
+        profile:ListenToRelease(function()
+            Profiles[player] = nil
+            player:Kick()
         end)
 
-        if Player:IsDescendantOf(Players) == true then
-            Profiles[Player] = Profile
+        if player:IsDescendantOf(Players) == true then
+            Profiles[player] = profile
 
-            Datastore:LoadData(Player)
-            Datastore:SaveData(Player)
+            Datastore:LoadData(player)
+            Datastore:SaveData(player)
         else
-            Profile:Release()
+            profile:Release()
         end
     else
-        Player:Kick()
+        player:Kick()
     end
 end
 
-function Datastore:LoadData(Player: Player)
-    if Profiles[Player].Data.LoginInfo.TotalLogins < 1 then
-        self:SetupData(Profiles[Player])
+function Datastore:LoadData(player: Player)
+    if Profiles[player].Data.loginInfo.totalLogins < 1 then
+        self:SetupData(Profiles[player])
     end
 
-    Profiles[Player].Data.LoginInfo.TotalLogins += 1
-    Profiles[Player].Data.LoginInfo.LastLogin = os.time()
+    Profiles[player].Data.loginInfo.totalLogins += 1
+    Profiles[player].Data.loginInfo.lastLogin = os.time()
     
-    Datastore[Player].DataObject = DataObject.new(Player, Profiles[Player].Data, true)
-    Datastore[Player].PlayerEntity = PlayerEntityManager.new(Player)
+    Datastore[player].DataObject = DataObject.new(player, Profiles[player].Data, true)
+    Datastore[player].PlayerEntity = PlayerEntityManager.new(player)
 
-    PlayerEntityManager.SetupCharacter(Player)
+    PlayerEntityManager.SetupCharacter(player)
 
-    Datastore[Player].PlayerEntity:SetValue({"Loaded"}, true)
+    Datastore[player].PlayerEntity:SetValue({"loaded"}, true)
 end
 
-function Datastore:SaveData(Player: Player)
-    Datastore[Player].DataObject.Changed:Connect(function(Player, UpdatedData)
-        Profiles[Player].Data = UpdatedData
+function Datastore:SaveData(player: Player)
+    Datastore[player].DataObject.Changed:Connect(function(player, UpdatedData)
+        Profiles[player].Data = UpdatedData
     end)
 end
 
 function Datastore:SetupData(Profile: any)
-    Profile.Data.Save = ScriptUtils.DeepCopy(Constants.ProfileSettings.SaveTemplate)
+    Profile.Data.Save = ScriptUtils.DeepCopy(Constants.profileSettings.saveTemplate)
 end
 
-for _, Player in ipairs (Players:GetPlayers()) do
+for _, player in ipairs (Players:GetPlayers()) do
     task.spawn(function()
-        Datastore[Player] = {}
-        Datastore:PlayerAdded(Player)
+        Datastore[player] = {}
+        Datastore:PlayerAdded(player)
     end)
 end
 
-Players.PlayerAdded:Connect(function(Player: Player)
-    Datastore[Player] = {}
-    Datastore:PlayerAdded(Player)
+Players.PlayerAdded:Connect(function(player: Player)
+    Datastore[player] = {}
+    Datastore:PlayerAdded(player)
 end)
 
-Players.PlayerRemoving:Connect(function(Player: Player?)
-    assert(Player, "Player is nil")
-    local Profile = Profiles[Player]
-    DataObject[Player] = nil
+Players.PlayerRemoving:Connect(function(player: Player?)
+    assert(player, "player is nil")
 
-    if Profile then
-        Profile.Data.LoginInfo.TotalPlaytime += (os.time() -  Profile.Data.LoginInfo.LastLogin) 
+    local profile = Profiles[player]
+    DataObject[player] = nil
+
+    if profile then
+        profile.Data.loginInfo.totalPlaytime += (os.time() -  profile.Data.loginInfo.lastLogin) 
     end
 
-    if Profile ~= nil then
-        Profile:Release()
+    if profile ~= nil then
+        profile:Release()
     end
 end)
 

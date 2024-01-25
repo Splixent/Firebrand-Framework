@@ -19,9 +19,9 @@ function Replication:GetInfo(Info, Details)
 end
 
 ReplicaController.NewReplicaSignal:Connect(function(Replica)
-	if Replica.Class == "States"..Player.UserId then
+	if Replica.Class == "states"..Player.UserId then
 		Replication["States"] = Replica
-	elseif Replica.Class == "DataKey"..Player.UserId then
+	elseif Replica.Class == "dataKey"..Player.UserId then
 		Replication["Data"] = Replica
 	else
 		Replication[Replica.Class] = Replica
@@ -29,7 +29,7 @@ ReplicaController.NewReplicaSignal:Connect(function(Replica)
 end)
 
 function Replication.LoadedChanged(Handler)
-	Replication.States:ListenToChange({"Loaded"}, Handler)
+	Replication.States:ListenToChange({"loaded"}, Handler)
 end
 
 while game:IsLoaded() == false do

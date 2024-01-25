@@ -1,9 +1,9 @@
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local RunService = game:GetService("RunService")
 
-local Future = require(script.Parent.Parent.Future)
+local Future = require(script.Parent.Future)
 
-local Remote = ReplicatedStorage:WaitForChild("RedEvent")
+local Remote = ReplicatedStorage:WaitForChild("ReliableRedEvent")
 local Identifier = {}
 
 local NextShared = 0
@@ -27,9 +27,15 @@ function Identifier.Shared(Name: string)
 				return Id
 			end
 		else
+			local delayWarn = task.delay(5, function()
+				warn(`Yielded while initializing identifier: {Name}. It may not exist on the server!`)
+			end)
+
 			while not Remote:GetAttribute(Name) do
 				Remote.AttributeChanged:Wait()
 			end
+
+			task.cancel(delayWarn)
 
 			return Remote:GetAttribute(Name)
 		end

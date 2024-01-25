@@ -14,8 +14,13 @@ dependencies = []
 
 [[package]]
 name = "red-blox/red"
-version = "2.1.1"
-dependencies = [["Future", "red-blox/future@1.0.1"], ["Guard", "red-blox/guard@1.0.1"], ["Spawn", "red-blox/spawn@1.0.0"]]
+version = "2.3.1"
+dependencies = [["Future", "red-blox/future@1.0.1"], ["Guard", "red-blox/guard@1.0.1"], ["Signal", "red-blox/signal@2.0.2"], ["Spawn", "red-blox/spawn@1.0.0"]]
+
+[[package]]
+name = "red-blox/signal"
+version = "2.0.2"
+dependencies = [["Spawn", "red-blox/spawn@1.0.0"]]
 
 [[package]]
 name = "red-blox/spawn"
@@ -23,6 +28,6 @@ version = "1.0.0"
 dependencies = []
 
 [[package]]
-name = "tomiokelana/gengine-framework"
+name = "tomiokelana/firebrand-framework"
 version = "0.1.0"
-dependencies = [["Red", "red-blox/red@2.1.1"]]
+dependencies = [["Red", "red-blox/red@2.3.1"]]

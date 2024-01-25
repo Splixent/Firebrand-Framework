@@ -5,7 +5,7 @@
 
 local EPSILON = 1e-6
 
-local LinearValue = require(script.LinearValue)
+local LinearValue = require(script.Parent.LinearValue)
 
 local SpringUtils = {}
 

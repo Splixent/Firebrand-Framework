@@ -2,6 +2,7 @@
 
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local ContentProvider = game:GetService("ContentProvider")
 
 local Shared = ReplicatedStorage.Shared
 local Client = Players.LocalPlayer.PlayerScripts.Client
@@ -18,15 +19,17 @@ task.spawn(function()
         game.Loaded:Wait()
     end
 
+    ContentProvider:PreloadAsync(game:GetDescendants())
+
     repeat task.wait() until Replication:GetInfo("States")
 
-    if Replication:GetInfo("States").Loaded == false then
-        Replication:LoadedChanged(function(NewValue)
+    if Replication:GetInfo("States").loaded == false then
+        Replication.LoadedChanged(function(NewValue)
             if NewValue == true then
                 InGame:Fire()
             end
         end)
-    elseif Replication:GetInfo("States").Loaded == true then
+    elseif Replication:GetInfo("States").loaded == true then
         InGame:Fire()
     end
 end)

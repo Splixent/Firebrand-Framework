@@ -11,51 +11,50 @@ local ReplicaService = require(Server.ReplicaService)
 local Constants = require(Server.Constants)
 local ScriptUtils = require(Shared.ScriptUtils)
 local Maid = require(Shared.Maid)
-local SharedTypes = require(Shared.SharedTypes)
 
 local PlayerEntityManager = {}
 
-function PlayerEntityManager.new(Player: Player?, ExtraInfo: boolean?): SharedTypes.Replica | { Replica: SharedTypes.Replica } | nil
-    assert(Player, "Player is nil")
-    if PlayerEntityManager[Player] == nil then
+function PlayerEntityManager.new(player: Player?, extraInfo: boolean?): any
+    assert(player, "Player is nil")
+    if PlayerEntityManager[player] == nil then
         local PlayerEntityInfo = {}
         PlayerEntityInfo.Replica = ReplicaService.NewReplica({
-            ClassToken = ReplicaService.NewClassToken("States"..Player.UserId),
-            Data = ScriptUtils.DeepCopy(Constants.States),
-            Replication = Player,
+            ClassToken = ReplicaService.NewClassToken("states"..player.UserId),
+            Data = ScriptUtils.DeepCopy(Constants.states),
+            Replication = player,
         })
-        PlayerEntityManager[Player] = PlayerEntityInfo
+        PlayerEntityManager[player] = PlayerEntityInfo
     end
-    return if ExtraInfo then PlayerEntityManager[Player] else PlayerEntityManager[Player].Replica
+    return if extraInfo then PlayerEntityManager[player] else PlayerEntityManager[player].Replica
 end
 
-function PlayerEntityManager.SetupCharacter(Player: Player?)
-    assert(Player, "Player is nil")
-    Player:LoadCharacter()
+function PlayerEntityManager.SetupCharacter(player: Player?)
+    assert(player, "Player is nil")
+    player:LoadCharacter()
 
-    local DiedMaid = Maid.new()
-    local Character: Model = Player.Character or Player.CharacterAdded:Wait()
-    local Humanoid: Humanoid = Character:WaitForChild("Humanoid"):: Humanoid
+    local diedMaid = Maid.new()
+    local character: Model = player.Character or player.CharacterAdded:Wait()
+    local humanoid: Humanoid = character:WaitForChild("Humanoid"):: Humanoid
 
-    DiedMaid:GiveTask(Humanoid.Died:Connect(function()
-        PlayerEntityManager.OnDied(Player)
-        DiedMaid:Destroy() 
+    diedMaid:GiveTask(humanoid.Died:Connect(function()
+        PlayerEntityManager.OnDied(player)
+        diedMaid:Destroy() 
     end))
 end
 
-function PlayerEntityManager.OnDied(Player: Player?)
-    PlayerEntityManager.SetupCharacter(Player)
+function PlayerEntityManager.OnDied(player: Player?)
+    PlayerEntityManager.SetupCharacter(player)
 end
 
-Players.PlayerRemoving:Connect(function(Player: Player?)
-    local Replica = PlayerEntityManager.new(Player)
+Players.PlayerRemoving:Connect(function(player: Player?)
+    local Replica = PlayerEntityManager.new(player)
 
-    assert(Player, "Player is nil")
+    assert(player, "player is nil")
     assert(Replica, "PlayerEntity is nil")
 
     Replica:Destroy()
-    if PlayerEntityManager[Player] ~= nil then
-        PlayerEntityManager[Player] = nil
+    if PlayerEntityManager[player] ~= nil then
+        PlayerEntityManager[player] = nil
     end
 end)
 

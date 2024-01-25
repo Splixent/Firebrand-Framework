@@ -195,10 +195,10 @@ do
 				end
 			end
 		end
-		--[[ Raw listeners:
+		
 		for _, listener in ipairs(replica._raw_listeners) do
 			listener("SetValue", path_array, value)
-		end]]
+		end
 	end
 
 	function Replica:SetValues(path, values)

@@ -13,8 +13,8 @@ local Player = Players.LocalPlayer
 
 local UI = {}
 
-for i, Component in ipairs (script.Components:GetChildren()) do
-    table.insert(UI, require(Component))
+for i, UIElement in ipairs (script:GetChildren()) do
+    table.insert(UI, require(UIElement))
 end 
 
 New "ScreenGui" {

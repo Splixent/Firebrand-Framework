@@ -9,56 +9,55 @@ local Server = ServerScriptService.Server
 
 local Signal = require(Shared.Signal)
 local ReplicaService = require(Server.ReplicaService)
-local SharedTypes = require(Shared.SharedTypes)
 
 local DataObject = {}
 
-function DataObject.new(Player: Player?, LoadedData: any, ExtraInfo: boolean?): SharedTypes.Replica? | { Replica: SharedTypes.Replica, Signal: SharedTypes.Signal}?
-    assert(Player, "Player is nil")
-    if LoadedData == nil then
+function DataObject.new(player: Player?, loadedData: any, extraInfo: boolean?) : any
+    assert(player, "player is nil")
+    if loadedData == nil then
         repeat
             task.wait()
         until 
-        DataObject[Player] ~= nil
+        DataObject[player] ~= nil
 
-        return DataObject[Player]
+        return DataObject[player]
     end
 
-    if DataObject[Player] == nil then
-        DataObject[Player] = {}
-        DataObject[Player].Replica = ReplicaService.NewReplica({
-            ClassToken = ReplicaService.NewClassToken("DataKey"..Player.UserId),
-            Data = LoadedData,
-            Replication = Player,
+    if DataObject[player] == nil then
+        DataObject[player] = {}
+        DataObject[player].Replica = ReplicaService.NewReplica({
+            ClassToken = ReplicaService.NewClassToken("DataKey"..player.UserId),
+            Data = loadedData,
+            Replication = player,
         })
-        DataObject[Player].Changed = Signal.new()
+        DataObject[player].Changed = Signal.new()
     end
-    return if ExtraInfo then DataObject[Player] else DataObject[Player].Replica
+    return if extraInfo then DataObject[player] else DataObject[player].Replica
 end
 
-function DataObject.SetData(Player: Player?, Path: any, NewData: any): boolean?
-    assert(Player, "Player is nil")
-    if typeof(NewData) == "function" then
-        NewData = NewData(DataObject[Player].Replica.Data) 
-        if NewData == nil then
+function DataObject.SetData(player: Player?, path: any, newData: any): boolean?
+    assert(player, "Player is nil")
+    if typeof(newData) == "function" then
+        newData = newData(DataObject[player].Replica.Data) 
+        if newData == nil then
             return false
         end
     end
     
-    DataObject[Player].Replica:SetValues(Path, NewData[2])
-    DataObject[Player].Changed:Fire(Player, NewData[1])
+    DataObject[player].Replica:SetValues(path, newData[2])
+    DataObject[player].Changed:Fire(player, newData[1])
     return true
 end
 
-Players.PlayerRemoving:Connect(function(Player: Player?)
-    local Replica = DataObject.new(Player)
+Players.PlayerRemoving:Connect(function(player: Player?)
+    local Replica = DataObject.new(player)
     
-    assert(Player, "Player is nil")
-    assert(Replica, "PlayerData is nil")
+    assert(player, "player is nil")
+    assert(Replica, "playerData is nil")
 
     Replica:Destroy()
-    if DataObject[Player] ~= nil then
-        DataObject[Player] = nil
+    if DataObject[player] ~= nil then
+        DataObject[player] = nil
     end
 end)
 

@@ -8,9 +8,7 @@ local PubTypes = require(Shared.Fusion.PubTypes)
 local Spring = Fusion.Spring
 local Value = Fusion.Value
 
-local ScriptUtils = {
-	DaySeedOffset = 2
-}
+local ScriptUtils = {}
 
 function ScriptUtils.Lerp(Min: number, Max: number, Alpha: number): number
     return Min + ((Max - Min) * Alpha)
@@ -20,11 +18,7 @@ function ScriptUtils.InverseLerp(value: number, min: number, max: number): numbe
 	return (value / 100) * (max - min) + min
 end
 
-function ScriptUtils.DoubleInverseLinearInterpolation(value: number, min: number, max: number, mintwo: number, maxtwo: number): number
-	return (value - min) / (max - min) * (maxtwo - mintwo) + mintwo
-end
-
-function ScriptUtils.dubinvlerp(value: number, min: number, max: number, mintwo: number, maxtwo: number): number
+function ScriptUtils.Map(value: number, min: number, max: number, mintwo: number, maxtwo: number): number
 	return (value - min) / (max - min) * (maxtwo - mintwo) + mintwo
 end
 
@@ -138,6 +132,14 @@ function ScriptUtils.MergeTables(t1: any, t2: any): any
 	return Result
 end
 
+function ScriptUtils.ExtractNumbers(str)
+    local numbers = {}
+    for number in string.gmatch(str, "%d+") do
+        table.insert(numbers, tonumber(number))
+    end
+    return numbers
+end
+
 function ScriptUtils.StringToBool(str: string): boolean
 	return string.lower(str or "") == "true"
 end
@@ -156,10 +158,6 @@ end
 
 function ScriptUtils.GetSourceModule(): string
 	return string.split(debug.info(2, "s"), ".")[#string.split(debug.info(2, "s"), ".")]
-end
-
-function ScriptUtils.GetOffset(): number
-	return ScriptUtils.DaySeedOffset
 end
 
 return ScriptUtils

@@ -1,24 +1,24 @@
 local Constants = {
 
-	ProfileSettings = {
+	profileSettings = {
 
-		ProfileTemplate = {
-			LoginInfo = {
-                TotalLogins = 0,
-                LastLogin = 0,
-                LoginTime = 0,
-                TotalPlaytime = 0
+		profileTemplate = {
+			loginInfo = {
+                totalLogins = 0,
+                lastLogin = 0,
+                loginTime = 0,
+                totalPlaytime = 0
             },
 		},
 		
-        SaveTemplate = {
+        saveTemplate = {
 
         },
 	},
     
-    States = {
-        Loaded = false,
-        InGame = false,
+    states = {
+        loaded = false,
+        inGame = false,
     },
 
 }

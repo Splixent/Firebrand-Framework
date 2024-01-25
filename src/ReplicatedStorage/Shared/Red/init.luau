@@ -1,44 +1,32 @@
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local RunService = game:GetService("RunService")
-local Players = game:GetService("Players")
 
-local Remote
-local ClientFolder
 if RunService:IsServer() then
-	if ReplicatedStorage:FindFirstChild("RedEvent") then
-		Remote = ReplicatedStorage:FindFirstChild("RedEvent") :: RemoteEvent
-	else
-		Remote = Instance.new("RemoteEvent")
-		Remote.Name = "RedEvent"
-		Remote.Parent = ReplicatedStorage
+	if not ReplicatedStorage:FindFirstChild("ReliableRedEvent") then
+		local ReliableRemote = Instance.new("RemoteEvent")
+		ReliableRemote.Name = "ReliableRedEvent"
+		ReliableRemote.Parent = ReplicatedStorage
 	end
 
-	require(script.ServerEvent).Start()
-
-	local function PlayerAdded(Player: Player)
-		local ClientFolder = Instance.new("ScreenGui")
-
-		ClientFolder.Enabled = false
-		ClientFolder.ResetOnSpawn = false
-		ClientFolder.Name = "Red"
-		ClientFolder.Parent = Player:FindFirstChild("PlayerGui")
+	if not ReplicatedStorage:FindFirstChild("UnreliableRedEvent") then
+		local UnreliableRemote = Instance.new("UnreliableRemoteEvent")
+		UnreliableRemote.Name = "UnreliableRedEvent"
+		UnreliableRemote.Parent = ReplicatedStorage
 	end
 
-	Players.PlayerAdded:Connect(PlayerAdded)
-
-	for _, Player in Players:GetPlayers() do
-		PlayerAdded(Player)
-	end
+	require(script.Net).Server.Start()
 else
-	Remote = ReplicatedStorage:WaitForChild("RedEvent") :: RemoteEvent
+	ReplicatedStorage:WaitForChild("ReliableRedEvent")
+	ReplicatedStorage:WaitForChild("UnreliableRedEvent")
 
-	require(script.ClientEvent).Start()
-
-	ClientFolder = (Players.LocalPlayer:FindFirstChild("PlayerGui") :: PlayerGui):WaitForChild("Red") :: ScreenGui
-	ClientFolder.Parent = nil
+	require(script.Net).Client.Start()
 end
+
+local SharedEvents = require(script.SharedEvent)
 
 return {
 	Event = require(script.Event),
 	Function = require(script.Function),
+	SharedEvent = SharedEvents.SharedCallEvent,
+	SharedSignalEvent = SharedEvents.SharedSignalEvent,
 }
