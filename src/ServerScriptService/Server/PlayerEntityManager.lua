@@ -20,7 +20,7 @@ function PlayerEntityManager.new(player: Player?, extraInfo: boolean?): any
         local PlayerEntityInfo = {}
         PlayerEntityInfo.Replica = ReplicaService.NewReplica({
             ClassToken = ReplicaService.NewClassToken("states"..player.UserId),
-            Data = ScriptUtils.DeepCopy(Constants.states),
+            Data = ScriptUtils:DeepCopy(Constants.states),
             Replication = player,
         })
         PlayerEntityManager[player] = PlayerEntityInfo

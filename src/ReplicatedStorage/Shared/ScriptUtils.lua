@@ -10,23 +10,23 @@ local Value = Fusion.Value
 
 local ScriptUtils = {}
 
-function ScriptUtils.Lerp(Min: number, Max: number, Alpha: number): number
+function ScriptUtils:Lerp(Min: number, Max: number, Alpha: number): number
     return Min + ((Max - Min) * Alpha)
 end
 
-function ScriptUtils.InverseLerp(value: number, min: number, max: number): number
+function ScriptUtils:InverseLerp(value: number, min: number, max: number): number
 	return (value / 100) * (max - min) + min
 end
 
-function ScriptUtils.Map(value: number, min: number, max: number, mintwo: number, maxtwo: number): number
+function ScriptUtils:Map(value: number, min: number, max: number, mintwo: number, maxtwo: number): number
 	return (value - min) / (max - min) * (maxtwo - mintwo) + mintwo
 end
 
-function ScriptUtils.HMSFormat(Int: number): string
+function ScriptUtils:HMSFormat(Int: number): string
 	return string.format("%02i", Int)
 end
 
-function ScriptUtils.CreateSpring<T>(Properties: { Initial: PubTypes.Spring<T>, Speed: number, Damper: number }): any
+function ScriptUtils:CreateSpring<T>(Properties: { Initial: PubTypes.Spring<T>, Speed: number, Damper: number }): any
     local SetValue = Value(Properties.Initial)
     local SetSpring = Spring(SetValue, Properties.Speed, Properties.Damper)
 
@@ -36,23 +36,23 @@ function ScriptUtils.CreateSpring<T>(Properties: { Initial: PubTypes.Spring<T>, 
     }
 end
 
-function ScriptUtils.ConvertToDHMS(Seconds: number): string
+function ScriptUtils:ConvertToDHMS(Seconds: number): string
 	return string.format("%02i:%02i:%02i:%02i", Seconds / (60^2 * 24), (Seconds % (60^2 * 24)) / (60^2), (Seconds % (60^2)) / 60, Seconds % 60)
 end
 
-function ScriptUtils.ConvertToDHMSPlus(Seconds: number): string
+function ScriptUtils:ConvertToDHMSPlus(Seconds: number): string
 	return string.format("%02id:%02ih:%02im:%02is", Seconds / (60^2 * 24), (Seconds % (60^2 * 24)) / (60^2), (Seconds % (60^2)) / 60, Seconds % 60)
 end
 
-function ScriptUtils.ConvertToHMS(Seconds: number): string
+function ScriptUtils:ConvertToHMS(Seconds: number): string
 	return string.format("%02i:%02i:%02i", Seconds/60^2, Seconds/60%60, Seconds%60)
 end
 
-function ScriptUtils.ConvertToMS(Seconds: number): string
+function ScriptUtils:ConvertToMS(Seconds: number): string
 	return string.format("%02i:%02i", Seconds/60%60, Seconds%60)
 end
 
-function ScriptUtils.WeightedRandom(Dictionary: { Initial: any, Speed: number, Damper: number }, RandomSeed: Random?, ReturnObject: boolean?): nil | any | { Chance: number, Index: number, Object: any, Weight: number }
+function ScriptUtils:WeightedRandom(Dictionary: { Initial: any, Speed: number, Damper: number }, RandomSeed: Random?, ReturnObject: boolean?): nil | any | { Chance: number, Index: number, Object: any, Weight: number }
 	local TotalWeight = 0
 	for _, ChanceInfo in pairs(Dictionary) do
 		TotalWeight = TotalWeight + ChanceInfo.Weight
@@ -79,7 +79,7 @@ function ScriptUtils.WeightedRandom(Dictionary: { Initial: any, Speed: number, D
 	return nil
 end
 
-function ScriptUtils.DeepCompare(t1: any, t2: any, ignore_mt: boolean?)
+function ScriptUtils:DeepCompare(t1: any, t2: any, ignore_mt: boolean?)
     local ty1 = type(t1)
     local ty2 = type(t2)
     if ty1 ~= ty2 then return false end
@@ -90,27 +90,27 @@ function ScriptUtils.DeepCompare(t1: any, t2: any, ignore_mt: boolean?)
     if not ignore_mt and mt and mt.__eq then return t1 == t2 end
     for k1, v1 in pairs(t1) do
         local v2 = t2[k1]
-        if v2 == nil or not ScriptUtils.DeepCompare(v1, v2) then return false end
+        if v2 == nil or not ScriptUtils:DeepCompare(v1, v2) then return false end
     end
     for k2, v2 in pairs(t2) do
         local v1 = t1[k2]
-        if v1 == nil or not ScriptUtils.DeepCompare(v1, v2) then return false end
+        if v1 == nil or not ScriptUtils:DeepCompare(v1, v2) then return false end
     end
     return true
 end
 
-function ScriptUtils.DeepCopy(original: any): any
+function ScriptUtils:DeepCopy(original: any): any
 	local copy = {}
 	for k, v in pairs(original) do
 		if type(v) == "table" then
-			v = ScriptUtils.DeepCopy(v)
+			v = ScriptUtils:DeepCopy(v)
 		end
 		copy[k] = v
 	end
 	return copy
 end
 
-function ScriptUtils.NumberIsEvenOdd(Number: number): boolean
+function ScriptUtils:NumberIsEvenOdd(Number: number): boolean
 	if Number % 2 == 0 then
 		return true
 	else
@@ -118,7 +118,7 @@ function ScriptUtils.NumberIsEvenOdd(Number: number): boolean
 	end
 end
 
-function ScriptUtils.MergeTables(t1: any, t2: any): any
+function ScriptUtils:MergeTables(t1: any, t2: any): any
 	local Result = {}
 
 	for key, value in pairs(t1) do
@@ -132,7 +132,7 @@ function ScriptUtils.MergeTables(t1: any, t2: any): any
 	return Result
 end
 
-function ScriptUtils.ExtractNumbers(str)
+function ScriptUtils:ExtractNumbers(str)
     local numbers = {}
     for number in string.gmatch(str, "%d+") do
         table.insert(numbers, tonumber(number))
@@ -140,11 +140,11 @@ function ScriptUtils.ExtractNumbers(str)
     return numbers
 end
 
-function ScriptUtils.StringToBool(str: string): boolean
+function ScriptUtils:StringToBool(str: string): boolean
 	return string.lower(str or "") == "true"
 end
 
-function ScriptUtils.CommaValue(amount: number): string
+function ScriptUtils:CommaValue(amount: number): string
 	local formatted = tostring(amount)
 	local k
 	while true do  
@@ -156,7 +156,7 @@ function ScriptUtils.CommaValue(amount: number): string
 	return formatted
 end
 
-function ScriptUtils.GetSourceModule(): string
+function ScriptUtils:GetSourceModule(): string
 	return string.split(debug.info(2, "s"), ".")[#string.split(debug.info(2, "s"), ".")]
 end
 

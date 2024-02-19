@@ -18,7 +18,7 @@ local Profiles = {}
 
 local gameProfileStore = ProfileService.GetProfileStore(
     "default",
-    ScriptUtils.DeepCopy(Constants.profileSettings.profileTemplate)
+    ScriptUtils:DeepCopy(Constants.profileSettings.profileTemplate)
 ).Mock
 
 
@@ -68,7 +68,7 @@ function Datastore:SaveData(player: Player)
 end
 
 function Datastore:SetupData(Profile: any)
-    Profile.Data.Save = ScriptUtils.DeepCopy(Constants.profileSettings.saveTemplate)
+    Profile.Data.Save = ScriptUtils:DeepCopy(Constants.profileSettings.saveTemplate)
 end
 
 for _, player in ipairs (Players:GetPlayers()) do
